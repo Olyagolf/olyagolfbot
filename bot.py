@@ -1,4 +1,4 @@
-from telegram.ext import Updater, CommandHandler
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import logging
 
 URL=open('proxy.txt').read().split('\n')[0]
@@ -20,6 +20,11 @@ def greet_user(bot, update):
     logging.info(greet_text)
     update.message.reply_text(greet_text)
 
+def talk_to_me(bot, update):
+    user_text="Привет {}! Ты написал: {}".format(update.message.chat.first_name, update.message.text)
+    logging.info("User: %s, Chat id: %s, Message: %s", update.message.chat.username, update.message.chat.id, update.message.text)
+    update.message.reply_text(user_text)
+
 def main():
     tmebot = Updater(tmetoken, request_kwargs=PROXY)
 
@@ -27,6 +32,7 @@ def main():
 
     dp=tmebot.dispatcher
     dp.add_handler(CommandHandler("start", greet_user))
+    dp.add_handler(MessageHandler(Filters.text, talk_to_me))
 
     tmebot.start_polling()
     tmebot.idle()
